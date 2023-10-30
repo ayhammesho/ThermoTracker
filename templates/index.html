@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/index.css')}}">
+
+    <!-- <link rel="stylesheet" href="assets/css/index.css" /> -->
+    <title>Chart Project</title>
+  </head>
+  <body>
+    <header id="main-chart" style="height: 90vh; margin-bottom: 1rem">
+      <canvas id="myChart" width="400" height="auto"></canvas>
+    </header>
+    <div class="container">
+      <input type="date" class="btn" name="filter" id="filter" />
+      <button id="years" class="btn">Years</button>
+      <button id="months" class="btn">Months Of the Year</button>
+      <button id="days-of-month" class="btn">Days Of the Month</button>
+      <button id="hours-of-day" class="btn">Hours of the Day</button>
+      <button id="last-hour" class="btn" >last Hour</button>
+      <button id="live" class="btn">LIVE</button>
+      <a href="./data" class="btn" style="text-decoration: none;">DATA</a>
+    </div>
+  </body>
+  <script src="{{url_for('static', filename='js/chart.js')}}"></script>
+  <!-- <script src="assets/js/myChart.js"></script> -->
+  <script src="{{url_for('static', filename='js/myChart.js')}}"></script>
+
+  <!-- <script src="assets/js/myChart.js"></script> -->
+</html>

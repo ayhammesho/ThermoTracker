@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="../static/css/data.css"> -->
+    <style>
+        .container { 
+            margin: 10px auto ;
+            text-align: center;
+        }
+        .btn {
+          background-color: #555;
+          color: #fff;
+          padding: 1rem 2rem;
+          border: none;
+          font-size: 1.25rem;
+          box-shadow: 4px 2px 10px 1px rgba(0, 0, 0, 0.7);
+          transform: translate(0, -5px);
+          transition: all ease-in-out 0.2s;
+        }
+        
+        .btn:hover {
+          background-color: rgb(56, 56, 56);
+          box-shadow: 2px 2px 10px 1px rgba(0, 0, 0, 0.7);
+          transform: translate(0, 0);
+        }
+    </style>
+
+    <title>TempValue</title>
+</head>
+<body>
+    <div class="container">
+      <div>
+        <a href="./" class="btn">Back</a>
+        <button type="button" class="btn" onclick="tableToCSV()">
+          download CSV
+        </button>
+    </div>
+
+
+    <div class="inputs">
+      <input 
+      type="text" 
+      id="old-input" 
+      placeholder="Search for date" 
+      title="Type in a nam">
+      
+      <input 
+      type="text" 
+      id="new-input" 
+      placeholder="Search for date" 
+      title="Type in a nam">
+
+
+      
+      <button  id="btn-get" >get</button>
+    </div>
+
+
+    <table class="table container" id= myTable style =" width:1200px ;">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Sensor1</th>
+            <th scope="col">Sensor2</th>
+            <th scope="col">date</th>
+          </tr>
+        </thead>
+        <tbody id ='body-table'>
+        {%for data in array%}
+          <tr>
+            <td>{{data.0}}</td>
+            <td>{{data.1}}</td>
+            <td>{{data.2}}</td>
+          </tr>
+        {%endfor%}
+        </tbody>
+      </table>
+   
+   
+    </div>
+      <!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+<script type="text/javascript">
+  btn = document.getElementById('btn-get')
+  bodyTable = document.getElementById('body-table')
+  function myFunction(){
+    console.log('e')
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("myTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[2];
+
+      if (td ) {
+          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        } 
+      }
+  }
+  
+
+
+  
+    function tableToCSV() {
+      // Variable to store the final csv data
+      var csv_data = [];
+      // Get each row data
+      var rows = document.getElementsByTagName('tr');
+      for (var i = 0; i < rows.length; i++) {
+          if (rows[i].style.display !='none')
+          {
+            var cols = rows[i].querySelectorAll('td,th');
+            var csvrow = [];
+            for (var j = 0; j < cols.length; j++) {
+
+
+                csvrow.push(cols[j].innerHTML);
+            }
+
+            csv_data.push(csvrow.join(","));
+        }
+      }
+
+      csv_data = csv_data.join('\n');
+
+      downloadCSVFile(csv_data);
+
+  }
+
+  function downloadCSVFile(csv_data) {
+
+      // Create CSV file object and feed
+      // our csv_data into it
+      CSVFile = new Blob([csv_data], {
+          type: "text/csv"
+      });
+
+      // Create to temporary link to initiate
+      // download process
+      var temp_link = document.createElement('a');
+
+      // Download csv file
+      temp_link.download = "data.csv";
+      var url = window.URL.createObjectURL(CSVFile);
+      temp_link.href = url;
+
+      // This link should not be displayed
+      temp_link.style.display = "none";
+      document.body.appendChild(temp_link);
+
+      // Automatically click the link to
+      // trigger download
+      temp_link.click();
+      document.body.removeChild(temp_link);
+  }
+
+
+
+ async function dddd() { 
+    oldinputText= document.getElementById('old-input').value;
+    newinputText= document.getElementById('new-input').value;
+ const ip = "https://vmi782673.contaboserver.net";
+  //const ip = "http://192.168.1.103:5001";
+  const res = await fetch(`${ip}/api/filter?old=${oldinputText}&new=${newinputText}`);
+
+// let res = await fetch("../../get.json");
+  const data = await res.json();
+  console.log(data ,);
+  
+  if (data['error'] ==  'invalid parameter') { 
+    alert("the inputs parameter is wrong , please check it and try again");
+  }else { 
+    bodyTable.innerHTML = '';
+    d='';
+    data.forEach((el) => { 
+      d +=  
+      `
+        <tr>
+          <td>${el.sensor1}</td>
+          <td>${el.sensor2}</td>
+          <td>${el.time}</td>
+        </tr>
+      `
+    })
+    bodyTable.innerHTML = d;
+    
+  }
+
+
+
+  }
+  btn.addEventListener('click' ,dddd )
+
+</script>
+</body>
+</html>
